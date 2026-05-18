@@ -1,0 +1,6 @@
+telethon
+groq
+gTTS
+yt-dlp
+youtube-search-python
+requests
