@@ -9,17 +9,16 @@ user_status = {}
 
 def get_main_buttons():
     return [
-        [Button.inline("🤖 AI Ask", b"ai_ask"), Button.inline("🎙️ AI Voice", b"ai_voice")],
-        [Button.inline("🌍 AI Translator", b"ai_trans"), Button.inline("💻 Code Helper", b"ai_code")],
-        [Button.inline("🎨 AI ပုံဆွဲမယ်", b"ai_img"), Button.inline("📰 သတင်း/Updates", b"ai_news")],
-        [Button.inline("🎬 YT ရှာဖွေရေး", b"yt_search"), Button.inline("🎥 Downloader", b"dl")],
-        [Button.inline("🔄 Restart Bot", b"start_again")]
+        [Button.inline("🤖 AI Assistant", b"ai_ask"), Button.inline("🌍 AI ဘာသာပြန်", b"ai_trans")],
+        [Button.inline("📝 စာစီစာကုံး", b"ai_write"), Button.inline("💻 Code Helper", b"ai_code")],
+        [Button.inline("🎨 AI ပုံဆွဲမယ်", b"ai_img"), Button.inline("🎬 YT ရှာဖွေရေး", b"yt_search")],
+        [Button.inline("🎥 Downloader", b"dl"), Button.inline("🔄 Restart", b"start_again")]
     ]
 
 @bot.on(events.NewMessage(pattern='/start'))
 async def start(event):
     user_status[event.sender_id] = None
-    await event.reply("🔥 **Super AI Bot V4.0 (Ultimate Edition) အသင့်ဖြစ်ပါပြီ!**", buttons=get_main_buttons())
+    await event.reply("🚀 **Super AI Bot V3.0 (အစွမ်းထက်ဆုံး Version) အသင့်ဖြစ်ပါပြီ ဆရာကြီး!**", buttons=get_main_buttons())
 
 @bot.on(events.CallbackQuery)
 async def callback(event):
@@ -28,11 +27,10 @@ async def callback(event):
     
     modes = {
         b"ai_ask": ("ai_general", "🤖 **သိချင်တာရှိရင် တောက်လျှောက်မေးပါ ဆရာကြီး-**"),
-        b"ai_voice": ("ai_voice", "🎙️ **အသံပြောင်းချင်တဲ့ စာသားပေးပါ (MM/EN ရပါတယ်)-**"),
         b"ai_trans": ("ai_translate", "🌍 **ဘာသာပြန်ချင်တဲ့ စာသား ပေးပါ (EN ⇄ MM)-**"),
+        b"ai_write": ("ai_writer", "📝 **ဘာအကြောင်းအရာ ရေးပေးရမလဲ ဆရာကြီး-**"),
         b"ai_code": ("ai_coder", "💻 **ဘယ်လို Programming အကူအညီ လိုအပ်ပါသလဲ ဆရာကြီး-**"),
         b"ai_img": ("ai_image", "🎨 **ဘယ်လိုပုံမျိုး ဆွဲပေးရမလဲ (English လို ရိုက်ပေးပါ)-**"),
-        b"ai_news": ("ai_news", "📰 **ဘယ်လိုသတင်းတွေ သိချင်ပါသလဲ (ဥပမာ- Tech news)-**"),
         b"dl": ("dl", "📥 **Video Link ပေးပါ (TikTok/YouTube/FB)-**"),
         b"yt_search": ("yt_search", "🔍 **ဗီဒီယိုအမည် ပေးပါ-**")
     }
@@ -53,18 +51,11 @@ async def handle_all(event):
 
     m = await event.reply("⏳ **လုပ်ဆောင်နေပါပြီ ဆရာကြီး...**")
     
-    if st == "ai_voice":
-        v_path = ai_engine.text_to_speech(text)
-        if v_path:
-            await bot.send_file(event.chat_id, v_path, caption=f"🎙️ **'{text}' ကို ဖတ်ပြထားတာပါ**")
-            os.remove(v_path)
-        else: await event.reply("⚠️ အသံပြောင်းလို့ မရပါဘူး ဆရာကြီး။")
-    
-    elif st.startswith("ai_"):
+    if st.startswith("ai_"):
         mode = st.split("_")[1]
         if mode == "image":
             img_url = ai_engine.generate_image_url(text)
-            await bot.send_file(event.chat_id, img_url, caption=f"🎨 **AI ဆွဲပေးလိုက်တဲ့ပုံပါ:**\n`{text}`")
+            await bot.send_file(event.chat_id, img_url, caption=f"🎨 **ဆရာကြီး စိတ်ကူးထဲကပုံလေးပါ:**\n`{text}`")
         else:
             res = ai_engine.ask_ai(text, mode=mode)
             await event.reply(f"🤖 **AI ရဲ့ အဖြေ:**\n\n{res}\n\n---")
@@ -72,15 +63,17 @@ async def handle_all(event):
     elif st == "dl":
         path, msg = downloader.download_video(text)
         if path and os.path.exists(path):
-            await bot.send_file(event.chat_id, path, caption=msg); os.remove(path)
+            await bot.send_file(event.chat_id, path, caption=msg)
+            os.remove(path)
         else: await event.reply(msg)
         user_status[uid] = None
         
     elif st == "yt_search":
-        res = search_engine.search_youtube(text); await event.reply(res)
+        res = search_engine.search_youtube(text)
+        await event.reply(res)
         user_status[uid] = None
 
     await m.delete()
 
-print("✅ Super Bot V4.0 စတင်ပါပြီ ဆရာကြီး...")
+print("✅ Super Bot V3.0 စတင်ပါပြီ ဆရာကြီး...")
 bot.run_until_disconnected()
